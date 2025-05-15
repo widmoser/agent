@@ -13,10 +13,10 @@
   "license": "MIT",
   "author": "widmoser",
   "type": "module",
-  "main": "agent.ts",
+  "main": "main.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --loader ts-node/esm agent.ts"
+    "test": "echo 'Error: no test specified' && exit 1",
+    "start": "node --loader ts-node/esm main.ts"
   },
   "devDependencies": {
     "@types/node": "^22.15.17",
