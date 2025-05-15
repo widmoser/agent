@@ -1,29 +1,50 @@
-const apiKey: string | undefined  = process.env.OPENROUTER_API_KEY;
+import { queryLLM } from './llm.js'; // Using .js extension for ES Module imports
+
+const apiKey: string | undefined = process.env.OPENROUTER_API_KEY;
+
 if (!apiKey) {
     console.error('Please set the OPENROUTER_API_KEY environment variable.');
     process.exit(1);
 }
 
-const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-        Authorization: `Bearer ${apiKey}`,
-        // 'HTTP-Referer': '<YOUR_SITE_URL>', // Optional. Site URL for rankings on openrouter.ai.
-        // 'X-Title': '<YOUR_SITE_NAME>', // Optional. Site title for rankings on openrouter.ai.
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        model: 'openai/gpt-4o',
-        messages: [
+async function main() {
+    const currentApiKey = apiKey as string; // apiKey is guaranteed non-null here
+
+    try {
+        const userMessages = [
             {
-                role: 'user',
+                role: 'user' as const,
                 content: 'What is the meaning of life?',
             },
-        ],
-    }),
-});
+        ];
 
-const data = await response.json();
-console.log(data.choices[0].message.content);
+        console.log('Querying LLM...');
+        const llmResponse = await queryLLM(currentApiKey, userMessages);
+        console.log('LLM Response:', llmResponse);
+
+        // Example of using optional parameters (currently commented out):
+        // console.log('Querying LLM with options...');
+        // const llmResponseWithOptions = await queryLLM(
+        //     currentApiKey,
+        //     userMessages,
+        //     'mistralai/mistral-7b-instruct', // model
+        //     'You are a concise assistant.'    // systemMessage
+        // );
+        // console.log('LLM Response (with options):', llmResponseWithOptions);
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error during LLM query:', error.message);
+            if (error.cause) {
+                 console.error('Cause:', error.cause);
+            }
+        } else {
+            console.error('An unknown error occurred during LLM query:', error);
+        }
+        process.exit(1);
+    }
+}
+
+main();
 
 export {};
