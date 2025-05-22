@@ -21,11 +21,26 @@ export class McpClient {
   }
 
   async listTools() {
-    return this.client.listTools();
+    return (await this.client.listTools()).tools.map(this.toOpenAiToolSchema);
   }
 
   async close() {
     await this.client.close();
+  }
+
+  toOpenAiToolSchema(tool: any) {
+    return {
+      type: "function",
+      function: {
+        name: tool.name,
+        description: tool.description,
+        parameters: {
+          type: "object",
+          properties: tool.inputSchema.properties,
+          required: tool.inputSchema.required
+        }
+      }
+    };
   }
 }
 

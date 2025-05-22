@@ -16,7 +16,7 @@ export async function runAgentLogic(
     const client = new McpClient();
     await client.connect();
     const tools = await client.listTools();
-    console.log('Agent logic: Available tools:', tools.tools);
+    console.log('Agent logic: Available tools:', tools);
     const userMessages: UserMessageInput[] = [
         {
             role: 'user' as const,

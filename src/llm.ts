@@ -47,7 +47,7 @@ export async function queryLLM(
 
     if (data && data.choices && Array.isArray(data.choices) && data.choices.length > 0 &&
         data.choices[0].message && typeof data.choices[0].message.content === 'string') {
-        return data.choices[0].message.content;
+        return data.choices[0].message;
     } else {
         let detail = "Unexpected response structure.";
         if (!data || !data.choices || !Array.isArray(data.choices) || data.choices.length === 0) {
