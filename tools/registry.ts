@@ -9,3 +9,7 @@ export const toolRegistry = [
     readFileTool,
     // Add other tools here as they are created
 ];
+
+export const toolSpecs = toolRegistry.map(
+    tool => tool.schema
+);

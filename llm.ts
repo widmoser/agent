@@ -1,3 +1,5 @@
+import { toolSpecs } from "./tools/registry";
+
 interface ApiMessage {
     role: 'system' | 'user' | 'assistant';
     content: string;
@@ -32,6 +34,7 @@ export async function queryLLM(
         body: JSON.stringify({
             model: model,
             messages: messages,
+            tools: toolSpecs,
         }),
     });
 
