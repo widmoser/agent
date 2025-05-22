@@ -1,4 +1,4 @@
-import { toolSpecs } from "./tools/registry";
+import { toolSpecs } from "./tools/registry.js";
 
 interface ApiMessage {
     role: 'system' | 'user' | 'assistant';

@@ -1,7 +1,7 @@
 // tools/registry.ts
 
-import { listFilesTool } from './listFiles';
-import { readFileTool } from './readFile';
+import { listFilesTool } from './listFiles.js';
+import { readFileTool } from './readFile.js';
 
 // Define the array of all tools
 export const toolRegistry = [

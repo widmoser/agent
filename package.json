@@ -16,7 +16,7 @@
   "main": "main.ts",
   "scripts": {
     "test": "jest --preset ts-jest",
-    "start": "node --loader ts-node/esm main.ts"
+    "start": "node --env-file=.env --loader ts-node/esm main.ts"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
