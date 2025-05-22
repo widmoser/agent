@@ -1,5 +1,8 @@
 // main.ts (derived from the old agent.ts)
 import { runAgentLogic } from './agent.js'; // Import from the new agent.ts
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import fs from 'fs/promises';
 
 const apiKey: string | undefined = process.env.OPENROUTER_API_KEY;
 
@@ -9,24 +12,80 @@ if (!apiKey) {
 }
 
 async function main() {
-    const currentApiKey = apiKey as string; // apiKey is guaranteed non-null here
-    const userQuery = 'What is the meaning of life?'; // Default query from original example
+    const argv = await yargs(hideBin(process.argv))
+        .usage('Usage: $0 [inlineQueryText] [--query <filePath>] [--model <modelName>] [--system <filePath>]')
+        .option('model', {
+            alias: 'm',
+            type: 'string',
+            description: 'The name of the LLM model that is being used.',
+        })
+        .option('query', {
+            alias: 'q',
+            type: 'string',
+            description: 'Path to a file containing the task for the LLM to perform.',
+        })
+        .option('system', {
+            alias: 's',
+            type: 'string',
+            description: 'Path to a file containing the system prompt for the LLM. If not provided, attempts to read from .system.md.',
+        })
+        // Positional arguments (like an inline query) will be in argv._
+        .help()
+        .alias('help', 'h')
+        .parseAsync();
+
+    const currentApiKey = apiKey as string;
+    let userQuery: string;
+    let systemPrompt: string | undefined;
+
+    const queryArg = argv.query as string | undefined;
+    const inlineQuery = argv._[0] as string | undefined;
+    const systemArg = argv.system as string | undefined;
+
+    let querySourceMessage: string;
+
+    if (queryArg && inlineQuery) {
+        console.error('Error: Ambiguous query. Please use either --query <filePath> OR an inline query (positional argument), but not both.');
+        process.exit(1);
+    }
+
+    if (queryArg) {
+        try {
+            userQuery = await fs.readFile(queryArg, 'utf-8');
+            querySourceMessage = `query from file: "${queryArg}"`;
+        } catch (err) {
+            console.error(`Error reading query file "${queryArg}":`, err);
+            process.exit(1);
+        }
+    } else if (inlineQuery) {
+        userQuery = inlineQuery;
+        querySourceMessage = `inline query: "${userQuery}"`;
+    } else {
+        console.error('Error: No query provided. Please use --query <filePath> or provide an inline query text.');
+        process.exit(1);
+    }
+
+    // Handle system prompt
+    const systemPromptFilePath = systemArg || '.system.md';
+    const isSystemPromptFromArg = !!systemArg; // True if --system was used, false if we're using default .system.md
 
     try {
-        console.log(`Executing agent for query: "${userQuery}"`);
-        // Call the agent logic, potentially with optional model and system message
-        const agentResponse = await runAgentLogic(currentApiKey, userQuery);
-        console.log('Agent Response:', agentResponse);
+        systemPrompt = await fs.readFile(systemPromptFilePath, 'utf-8');
+        console.log(`Using system prompt from file: "${systemPromptFilePath}"`);
+    } catch (err) {
+        console.error(`Error reading specified system prompt file "${systemPromptFilePath}":`, err);
+        process.exit(1);
+    }
 
-        // Example of calling with optional parameters:
-        // console.log('Executing agent with specific model and system message...');
-        // const agentResponseWithOptions = await runAgentLogic(
-        //     currentApiKey,
-        //     userQuery,
-        //     'mistralai/mistral-7b-instruct', // example model
-        //     'You are an extremely concise assistant.'    // example systemMessage
-        // );
-        // console.log('Agent Response (with options):', agentResponseWithOptions);
+    const modelName = argv.model as string | undefined;
+
+    try {
+        console.log(`Executing agent for ${querySourceMessage}`);
+        if (modelName) {
+            console.log(`Using model: "${modelName}"`);
+        }
+        const agentResponse = await runAgentLogic(currentApiKey, userQuery, modelName, systemPrompt);
+        console.log('Agent Response:', agentResponse);
 
     } catch (error) {
         if (error instanceof Error) {
