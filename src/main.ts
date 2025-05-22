@@ -86,16 +86,8 @@ async function main() {
         }
         const agentResponse = await runAgentLogic(currentApiKey, userQuery, modelName, systemPrompt);
         console.log('Agent Response:', agentResponse);
-
     } catch (error) {
-        if (error instanceof Error) {
-            console.error('Error during agent execution:', error.message);
-            if (error.cause) {
-                 console.error('Cause:', error.cause);
-            }
-        } else {
-            console.error('An unknown error occurred during agent execution:', error);
-        }
+        console.error('Error during agent execution:', error);
         process.exit(1);
     }
 }

@@ -1,5 +1,5 @@
 // tools/readFile.test.ts
-import { readFileTool } from '../tools/readFile';
+import { readFileTool } from './readFile.js';
 import { vol } from 'memfs';
 
 // Mock the fs module with memfs

@@ -23,6 +23,10 @@ export class McpClient {
   async listTools() {
     return this.client.listTools();
   }
+
+  async close() {
+    await this.client.close();
+  }
 }
 
 // // List prompts

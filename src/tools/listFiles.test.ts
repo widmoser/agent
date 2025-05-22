@@ -1,4 +1,4 @@
-import { listFilesTool } from './listFiles';
+import { listFilesTool } from './listFiles.js';
 import { vol } from 'memfs';
 
 // Mock the fs module with memfs

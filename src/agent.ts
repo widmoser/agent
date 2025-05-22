@@ -26,5 +26,6 @@ export async function runAgentLogic(
 
     // console.log('Agent logic: Querying LLM...'); // For debugging
     const llmResponse = await queryLLM(apiKey, userMessages, model, systemMessage);
+    await client.close();
     return llmResponse;
 }
