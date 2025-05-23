@@ -1,5 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { ToolCall, ToolMessageInput } from "../api.js";
 
 export class McpClient {
   private transport: StdioClientTransport;
@@ -24,11 +26,25 @@ export class McpClient {
     return (await this.client.listTools()).tools.map(this.toOpenAiToolSchema);
   }
 
+  async callTool(toolCall: ToolCall): Promise<ToolMessageInput> {
+    console.log(toolCall);
+    const result = await this.client.callTool({
+      name: toolCall.function.name,
+      arguments: JSON.parse(toolCall.function.arguments)
+    });
+    return {
+      role: "tool",
+      content: result.content,
+      tool_call_id: toolCall.id,
+      name: toolCall.function.name,
+    };
+  }
+
   async close() {
     await this.client.close();
   }
 
-  toOpenAiToolSchema(tool: any) {
+  toOpenAiToolSchema(tool: Tool) {
     return {
       type: "function",
       function: {

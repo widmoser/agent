@@ -85,7 +85,7 @@ async function main() {
             console.log(`Using model: "${modelName}"`);
         }
         const agentResponse = await runAgentLogic(currentApiKey, userQuery, modelName, systemPrompt);
-        console.log('Agent Response:', agentResponse);
+        console.log(agentResponse);
     } catch (error) {
         console.error('Error during agent execution:', error);
         process.exit(1);

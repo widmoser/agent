@@ -1,11 +1,7 @@
 // agent.ts (new content)
+import { ApiMessage, AssistantMessageInput } from './api.js';
 import { queryLLM } from './llm.js';
 import { McpClient } from './mcp/mcp_client.js';
-
-interface UserMessageInput {
-    role: 'user';
-    content: string;
-}
 
 export async function runAgentLogic(
     apiKey: string,
@@ -16,16 +12,33 @@ export async function runAgentLogic(
     const client = new McpClient();
     await client.connect();
     const tools = await client.listTools();
-    console.log('Agent logic: Available tools:', tools);
-    const userMessages: UserMessageInput[] = [
-        {
-            role: 'user' as const,
-            content: userQuery,
-        },
-    ];
+    const messages: ApiMessage[] = [];
 
-    // console.log('Agent logic: Querying LLM...'); // For debugging
-    const llmResponse = await queryLLM(apiKey, userMessages, model, systemMessage);
-    await client.close();
-    return llmResponse;
+    if (systemMessage) {
+        messages.push({
+            role: 'system',
+            content: systemMessage,
+        });
+    }
+
+    messages.push({
+        role: 'user',
+        content: userQuery,
+    });
+
+    while (true) {
+        const llmResponse = await queryLLM(apiKey, messages, model, tools);
+        messages.push(llmResponse);
+        if (!llmResponse.tool_calls) {
+            await client.close();
+            return llmResponse.content;
+        }
+        for (const toolCall of llmResponse.tool_calls || []) {
+            console.log('Calling tool:', toolCall.function.name);
+            console.log('Tool call arguments:', toolCall.function.arguments);
+            const toolResponse = await client.callTool(toolCall);
+            console.log('Tool response:', JSON.stringify(toolResponse, null, 4));
+            messages.push(toolResponse);
+        }
+    }
 }
