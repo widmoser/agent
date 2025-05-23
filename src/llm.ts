@@ -26,7 +26,6 @@ export async function queryLLM(
     }
 
     const rawData = await response.json();
-    console.log(' --- LLM response:', JSON.stringify(rawData, null, 4));
     try {
         const parsedData = responseSchema.parse(rawData);
         // The user's original code returned the whole message object, not just content

@@ -67,11 +67,8 @@ async function main() {
 
     // Handle system prompt
     const systemPromptFilePath = systemArg || '.system.md';
-    const isSystemPromptFromArg = !!systemArg; // True if --system was used, false if we're using default .system.md
-
     try {
         systemPrompt = await fs.readFile(systemPromptFilePath, 'utf-8');
-        console.log(`Using system prompt from file: "${systemPromptFilePath}"`);
     } catch (err) {
         console.error(`Error reading specified system prompt file "${systemPromptFilePath}":`, err);
         process.exit(1);
@@ -80,12 +77,7 @@ async function main() {
     const modelName = argv.model as string | undefined;
 
     try {
-        console.log(`Executing agent for ${querySourceMessage}`);
-        if (modelName) {
-            console.log(`Using model: "${modelName}"`);
-        }
-        const agentResponse = await runAgentLogic(currentApiKey, userQuery, modelName, systemPrompt);
-        console.log(agentResponse);
+        await runAgentLogic(currentApiKey, userQuery, modelName, systemPrompt);
     } catch (error) {
         console.error('Error during agent execution:', error);
         process.exit(1);

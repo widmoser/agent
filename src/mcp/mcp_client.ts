@@ -27,7 +27,6 @@ export class McpClient {
   }
 
   async callTool(toolCall: ToolCall): Promise<ToolMessageInput> {
-    console.log(toolCall);
     const result = await this.client.callTool({
       name: toolCall.function.name,
       arguments: JSON.parse(toolCall.function.arguments)

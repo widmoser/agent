@@ -8,7 +8,7 @@ export async function runAgentLogic(
     userQuery: string,
     model?: string, // Optional: pass model to queryLLM
     systemMessage?: string // Optional: pass systemMessage to queryLLM
-): Promise<string> {
+): Promise<void> {
     const client = new McpClient();
     await client.connect();
     const tools = await client.listTools();
@@ -28,16 +28,18 @@ export async function runAgentLogic(
 
     while (true) {
         const llmResponse = await queryLLM(apiKey, messages, model, tools);
+        console.log('\n\n--------------\n\n');
+        if (llmResponse.content) {
+            console.log(llmResponse.content);
+        }
         messages.push(llmResponse);
         if (!llmResponse.tool_calls) {
             await client.close();
-            return llmResponse.content;
+            return;
         }
         for (const toolCall of llmResponse.tool_calls || []) {
-            console.log('Calling tool:', toolCall.function.name);
-            console.log('Tool call arguments:', toolCall.function.arguments);
+            console.log('Tool call:', toolCall.function.name);
             const toolResponse = await client.callTool(toolCall);
-            console.log('Tool response:', JSON.stringify(toolResponse, null, 4));
             messages.push(toolResponse);
         }
     }
