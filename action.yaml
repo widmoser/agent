@@ -1,0 +1,11 @@
+name: 'Generate Code'
+description: 'Creates or updates a pull request'
+inputs:
+  model:
+    description: 'Which LLM model to use'
+    required: true
+    default: 'openai/gpt-4o'
+outputs:
+runs:
+  using: 'node20'
+  main: 'action.js'
