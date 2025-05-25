@@ -1,11 +1,29 @@
-name: 'Generate Code'
-description: 'Creates or updates a pull request'
+name: "Generate Code"
+description: "Creates or updates a pull request"
 inputs:
-  model:
-    description: 'Which LLM model to use'
+  repo:
+    description: "GitHub repository in the format 'owner/repo'"
     required: true
-    default: 'openai/gpt-4o'
-outputs:
+  branch:
+    description: "The branch of the pull request"
+    required: true
+  model:
+    description: "Which LLM model to use"
+    required: true
+    default: "openai/gpt-4o"
+  github_token:
+    description: "GitHub token for authentication"
+    required: true
+  openrouter_api_key:
+    description: "OpenRouter api key for LLM access"
+    required: true
+  action:
+    description: 'Action to perform: "create" or "update"'
+    required: true
+    default: "create"
+  object_number:
+    description: 'For "create" action, the issue number to create the pull request for. For the "update" action, the pull request number to update.'
+    required: true
 runs:
-  using: 'node20'
-  main: 'action.js'
+  using: "node20"
+  main: "action.js"
