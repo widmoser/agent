@@ -26,4 +26,4 @@ inputs:
     required: true
 runs:
   using: "node20"
-  main: "action.js"
+  main: "dist/action.js"
