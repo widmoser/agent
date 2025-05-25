@@ -1,7 +1,7 @@
 name: "Generate Code"
 description: "Creates or updates a pull request"
 inputs:
-  repo:
+  repository:
     description: "GitHub repository in the format 'owner/repo'"
     required: true
   branch:
