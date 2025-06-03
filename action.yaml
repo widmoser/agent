@@ -26,4 +26,5 @@ inputs:
     required: true
 runs:
   using: "node20"
+  pre: "npm install && npm build"
   main: "dist/action.js"
