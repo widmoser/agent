@@ -1,13 +1,13 @@
-import { core } from '@actions/core';
-import { github } from '@actions/github';
+import { getInput } from '@actions/core';
+import { getOctokit } from '@actions/github';
 
-const repository = core.getInput('repository');
-const branch = core.getInput('branch');
+const repository = getInput('repository');
+const branch = getInput('branch');
 
-const apiKey = core.getInput('openrouter_api_key');
-const model = core.getInput('model');
-const githubToken = core.getInput('github_token');
-const octokit = github.getOctokit(githubToken)
+const apiKey = getInput('openrouter_api_key');
+const model = getInput('model');
+const githubToken = getInput('github_token');
+const octokit = getOctokit(githubToken)
 
 await octokit.request(`POST /repos/${repository}/pulls`, {
   owner: 'OWNER',
