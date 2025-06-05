@@ -1,0 +1,1 @@
+Simple coding agent implementation that can be run on command line and as a github action.
